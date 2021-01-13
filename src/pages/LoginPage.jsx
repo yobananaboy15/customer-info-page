@@ -1,10 +1,23 @@
-import React, {useState} from 'react'
+import React, {useState, useContext} from 'react'
 import {useHistory} from 'react-router-dom'
+import {UserStatusContext} from '../contexts/UserStatusContext'
 
 export const LoginPage = () => {
 
-    const [loginData, setLoginData ] = useState({email: "webb19@willandskill.se", password: "javascriptoramverk"})
+    const [loginData, setLoginData ] = useState({email: "Axel.Thiel@yh.nackademin.se", password: "javascriptoramverk"})
+    const {setUserStatus} = useContext(UserStatusContext)
     const history = useHistory()
+
+    const fetchUserStatus = () => {
+        fetch("https://frebi.willandskill.eu/api/v1/me", {
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem("WEBB20")}`
+              }
+          })
+          .then(response => response.json())
+          .then(data => setUserStatus(data))
+    }
 
     const handleOnChange = (e) => {
         const name = e.target.name;
@@ -29,10 +42,12 @@ export const LoginPage = () => {
           .then(res => res.json())
           .then(data => {
               localStorage.setItem('WEBB20', data.token)
+              //fetchUserStatus();
               history.push("/customers")
           })
           //Felhantering här? med try catch om det funkar, kör history.push, annars skriv felmeddelandet.
     }
+
 
     return (
         <div>
