@@ -1,15 +1,19 @@
 import React, {useContext} from 'react'
 import {UserStatusContext} from '../contexts/UserStatusContext'
-
-//Här ska jag använda kontext. //Visa om användaren är inloggad genom att kolla kontext. Finns det data ? Visa
-//Ska den här flyttas in till någon sida eller vara en fristående komponent?
+import {Link} from 'react-router-dom'
 
 export const UserStatus = () => {
     const {userStatus} = useContext(UserStatusContext)
-
     return (
         <div>
-            {userStatus && Object.values(userStatus).map(value => <div>{value}</div>)}
+            {userStatus ? (
+                <div>
+                    <p>User: {userStatus.firstName} {userStatus.lastName}
+                    <br/>
+                    Email: {userStatus.email}
+                    </p>
+                </div>
+            ) : <p>Du är inte inloggad. Logga in <Link to="/login">här</Link></p>}
         </div>
     )
 }
