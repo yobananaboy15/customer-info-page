@@ -1,13 +1,35 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { useHistory, Link } from 'react-router-dom'
-import {UserStatusContext} from "../contexts/UserStatusContext"
-import {fetchCustomers} from "../utils/fetchData"
+import { useHistory, useLocation, Link } from 'react-router-dom'
+import { CustomerModal } from '../components/CustomerModal'
+import {UserStatusContext} from '../contexts/UserStatusContext'
+import {UserStatus} from "../components/UserStatus"
+import {ButtonDelete} from "../components/ButtonDelete"
 
 export const CustomerDetailPage = (props) => {
-  const {customerList, setCustomerList} = useContext(UserStatusContext)
+
+  const {setCustomerList, userStatus} = useContext(UserStatusContext);
   const customerId = props.match.params.id
-  const customerItem = customerList.find(element => element.id === Number(customerId))
+  const [customerItem, setCustomerItem] = useState(null)
   const history = useHistory()
+  const location = useLocation()
+
+  function getCustomerItem() {
+    const url = `https://frebi.willandskill.eu/api/v1/customers/${customerId}/`
+    const token = localStorage.getItem("WEBB20")
+    fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      }
+    })
+    .then(res => res.json())
+    .then(data => setCustomerItem(data))
+  }
+
+  useEffect( () => {
+    getCustomerItem()
+  }, [location.key])
+
 
   function deleteCustomer() {
     const url = `https://frebi.willandskill.eu/api/v1/customers/${customerId}/`
@@ -18,16 +40,29 @@ export const CustomerDetailPage = (props) => {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`
       }
-    })
-    .then(() => {
-        fetchCustomers("https://frebi.willandskill.eu/api/v1/customers", token, setCustomerList)
-        history.push('/customers');
-    })
+	})
+	.then(() => {
+		fetch("https://frebi.willandskill.eu/api/v1/customers/", {
+				headers: {
+				  "Content-Type": "application/json",
+				  "Authorization": `Bearer ${token}`
+				}
+			  })
+			  .then(res => res.json())
+			  .then(data => {
+				  setCustomerList(data.results);
+				  history.push('/customers')
+			  })
+		})
   }
 
-  return (
+  return ( 
     <div>
+    <UserStatus />
+		{customerItem && userStatus ?
+		(
         <div>
+          <Link to="/customers">Back to customer list</Link>
           <h1>{customerItem.name}</h1>
           <table>
             <tbody>
@@ -68,16 +103,22 @@ export const CustomerDetailPage = (props) => {
               <tr>
                 <td>Website</td>
                 <td>
-                  <a href={customerItem.website} target="_blank">
+                  <a href={customerItem.website} target="_blank" rel="noreferrer">
                     {customerItem.website}
                   </a>
                 </td>
               </tr>
             </tbody>
           </table>
-          <button onClick={deleteCustomer}>Delete Customer</button>
-          <Link to={`/customers/${customerId}/edit`}>Edit Customer</Link> 
-        </div>
+          <ButtonDelete onClick={deleteCustomer}>Delete Customer</ButtonDelete>
+          <CustomerModal method='PUT' item={customerItem} urlProp={`https://frebi.willandskill.eu/api/v1/customers/${customerId}/`}/>
+		  </div>
+		  )
+		  :
+		  (
+			  <span>{userStatus ? 'Loading data...' : null}</span>
+		  )
+		  }  
     </div>
   )
 }
