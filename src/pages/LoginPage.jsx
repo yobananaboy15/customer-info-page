@@ -1,6 +1,8 @@
 import React, {useState, useContext} from 'react'
 import {useHistory} from 'react-router-dom'
 import {UserStatusContext} from '../contexts/UserStatusContext'
+import Form from 'react-bootstrap/Form'
+import {Button} from "../components/Button" 
 
 export const LoginPage = () => {
 
@@ -16,7 +18,10 @@ export const LoginPage = () => {
               }
           })
           .then(response => response.json())
-          .then(data => setUserStatus(data))
+          .then(data => {
+              setUserStatus(data);
+              history.push("/customers")
+            })
     }
 
     const handleOnChange = (e) => {
@@ -42,22 +47,25 @@ export const LoginPage = () => {
           .then(res => res.json())
           .then(data => {
               localStorage.setItem('WEBB20', data.token)
-              //fetchUserStatus();
-              history.push("/customers")
+              fetchUserStatus();
           })
-          //Felhantering här? med try catch om det funkar, kör history.push, annars skriv felmeddelandet.
     }
 
 
     return (
-        <div>
-            <form onSubmit={handleOnSubmit}>
-                <label>Email</label>
-                <input name="email" value={loginData.email} onChange={handleOnChange}/>
-                <label>Password</label>
-                <input name="password" value={loginData.password} onChange={handleOnChange}/>
-                <button type="submit">Log In</button>
-            </form>
-        </div>
+        <Form onSubmit={handleOnSubmit} className="w-50">
+  <Form.Group controlId="formBasicEmail">
+    <Form.Label>Email address</Form.Label>
+    <Form.Control name='email' type="email" value={loginData.email} onChange={handleOnChange} />
+  </Form.Group>
+
+  <Form.Group controlId="formBasicPassword">
+    <Form.Label>Password</Form.Label>
+    <Form.Control name="password" type="password" value={loginData.password} onChange={handleOnChange} />
+  </Form.Group>
+  <Button type="submit">
+    Log in
+  </Button>
+</Form>
     )
 }
