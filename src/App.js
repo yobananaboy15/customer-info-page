@@ -4,19 +4,16 @@ import { LoginPage } from "./pages/LoginPage";
 import { CustomerDetailPage } from "./pages/CustomerDetailPage";
 import { CustomerListPage } from "./pages/CustomerListPage";
 import { UserStatusContext } from "./contexts/UserStatusContext";
-import { UserStatus } from "./components/UserStatus";
-
-//regex för att validera ny kund /SE\d{10}$/.test()
+import Container from "react-bootstrap/Container";
 
 function App() {
   const [userStatus, setUserStatus] = useState(null);
   const [customerList, setCustomerList] = useState(null);
   return (
-    <div>
+    <Container>
       <UserStatusContext.Provider
         value={{ userStatus, setUserStatus, customerList, setCustomerList }}
       >
-        <UserStatus />
         <Switch>
           <Route path="/customers/:id" component={CustomerDetailPage} />
           <Route path="/customers">
@@ -27,7 +24,7 @@ function App() {
           </Route>
         </Switch>
       </UserStatusContext.Provider>
-    </div>
+    </Container>
   );
 }
 
