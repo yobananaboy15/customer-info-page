@@ -1,25 +1,28 @@
 import React, {useState} from 'react'
-import {ModalForm} from '../components/ModalForm'
+import {SubmitForm} from './SubmitForm'
 import Modal from 'react-bootstrap/Modal'
-import Button from 'react-bootstrap/Button'
+import {Button} from "../components/Button"
 
 
-export const CustomerModal = () => {
+export const CustomerModal = ({method, item, urlProp}) => {
     const [show, setShow] = useState(false)
 
-    const toggleModal = () =>{
-        setShow(!show)
+    const showModal = () => {
+        setShow(true)
+    } 
+    const closeModal = () => {
+        setShow(false)
     }
 
     return (
         <>
-            <Button onClick={toggleModal}>Add customer</Button>
-            <Modal show={show} onHide={toggleModal}>
+            <Button onClick={showModal}>{method === 'PUT' ? 'Edit ' : 'Add '}customer</Button>
+            <Modal show={show} onHide={closeModal}>
                 <Modal.Header closeButton>
-                <Modal.Title>Create new customer</Modal.Title>
+                <Modal.Title>{method === 'PUT' ? 'Edit ' : 'Add '} customer</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <ModalForm /> {/*Skicka med funktion för att stänga?*/}
+                    <SubmitForm method={method} item={item} urlProp={urlProp} closeModal={closeModal}/> 
                 </Modal.Body>
 
             </Modal>
